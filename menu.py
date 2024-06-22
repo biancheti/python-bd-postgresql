@@ -1,5 +1,6 @@
-from cadastro_categoria import alterar, consultar, deletar, inserir, menu_categoria
-from conexao import conecta_db
+from cadastro_categoria import menu_categoria
+from cadastro_produto import menu_produto
+
 
 if __name__ == "__main__":
     print('------------------------------')
@@ -12,19 +13,17 @@ if __name__ == "__main__":
     print('    5 - Sair do Sistema       ')
     print('------------------------------')
 
-    conexao = conecta_db()
-
     while True:
         opcao = input('Escolha uma opção: ')
 
         if opcao == "1":
-            menu_categoria(conexao) 
+            menu_categoria(opcao)
         elif opcao == "2":
-            inserir(conexao)
+            menu_produto(opcao)
         elif opcao == "3":
-            alterar(conexao)
+            print('Ainda não foi implementado')
         elif opcao == "4":
-           deletar(conexao)
+           print('Ainda não foi implementado')
         elif opcao == "5":
             break
         else:
