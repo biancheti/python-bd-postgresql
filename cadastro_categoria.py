@@ -12,15 +12,17 @@ def consultar(conexao):
 
 def inserir(conexao):
     cursor = conexao.cursor()
-    nome_categoria = input('Digite o nome da categoria: ') 
+    nome_categoria = input('Digite o nome da categoria: ')
+    
     sql_insert = "insert into categoria (nome) values ('"+ nome_categoria +  "')"
     cursor.execute(sql_insert)
     conexao.commit()
 
 def alterar(conexao):
     cursor = conexao.cursor()
-    id = input('Digite o ID: ')
+    id =             input('Digite o ID: ')
     nome_categoria = input('Digite o nome da categoria: ')
+
     sql_update = "update categoria set nome ='" + nome_categoria + "' where id = " + id
     cursor.execute(sql_update)
     conexao.commit()
@@ -28,6 +30,7 @@ def alterar(conexao):
 def deletar(conexao):
     cursor = conexao.cursor()
     id = input('Digite o ID: ')
+
     sql_delete = "delete from categoria where id =" + id
     cursor.execute(sql_delete)
     conexao.commit()
