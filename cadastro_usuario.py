@@ -17,7 +17,8 @@ def inserir(conexao):
     print('Cadastro de usuario ')
     login = input('Login : ') 
     senha = input('Senha : ') 
-    sql_insert = "insert into usuario (login,senha) values ('"+ login +  "','"+ senha +  "')"
+    admin = input('Admin: (S - Sim) ou (N - Não)')
+    sql_insert = "insert into usuario (login,senha, admin) values ('"+ login +  "','"+ senha + "', '"+admin +  "')"
     print(sql_insert)
     cursor.execute(sql_insert)
     conexao.commit()
