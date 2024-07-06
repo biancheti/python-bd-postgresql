@@ -1,13 +1,27 @@
 from conexao import conecta_db
 from datetime import datetime
 
-def insert_venda(conexao, venda):
+def insert_venda(conexao, venda, total_venda):
     cursor = conexao.cursor()
     sql_insert = """insert into venda (cliente_id, numero_venda, data_venda, valor_venda) values (%s, %s, %s, %s) RETURNING id; """
-    cursor.execute(sql_insert, venda)
+    dados = (venda[0], venda[1], venda[2], total_venda)
+    cursor.execute(sql_insert, dados)
     venda_id = cursor.fetchone()[0]
     conexao.commit()
     return venda_id
+
+def insert_item_venda(conexao, item_venda):
+    cursor = conexao.cursor()
+    sql_insert = """insert into itens_venda (venda_id, produto_id, qtde, valor_unitario, valor_total) values (%s, %s, %s, %s, %s) RETURNING id; """
+    cursor.execute(sql_insert, item_venda)
+    venda_id = cursor.fetchone()[0]
+    conexao.commit()
+
+def calcular_total_venda(itens_venda):
+    total_venda = 0
+    for item in itens_venda:
+        total_venda = total_venda + item['valor_total']
+    return total_venda
 
 def consultar(conexao):
     print('Consultar')
@@ -15,10 +29,20 @@ def consultar(conexao):
 def criar_venda(conexao):
     venda = alimentar_venda()
     itens_venda = alimentar_itens()
-    print(venda)
-    print(itens_venda)
-    venda_id = insert_venda(conexao, venda)
-    print(venda_id)
+
+    try:
+        total_venda = calcular_total_venda(itens_venda)
+        venda_id = insert_venda(conexao, venda, total_venda)
+        for item in itens_venda:
+            item_data = (venda_id, item['produto_id'], item['quantidade'], item['preco_unitario'], item['valor_total'])
+            insert_item_venda(conexao, item_data)
+
+        print('Venda inserida com sucesso!')
+    except Exception as e:
+        conexao.rollback()
+        print(f'Erro ao inserir venda e itens: {e}')    
+    finally:
+        conexao.close()           
 
 def alimentar_venda():
     id_cliente = input('Digite o ID do cliente: ')
@@ -33,9 +57,12 @@ def alimentar_itens():
         produto_id = int(input('Digite o ID do produto: '))
         quantidade = int(input('Digite a quantidade: '))
         preco_unitario = float(input('Digite o preço unitário: '))
+        valor_total = quantidade * preco_unitario
         itens_venda.append({'produto_id': produto_id,
                             'quantidade': quantidade,
-                            'preco_unitario': preco_unitario})
+                            'preco_unitario': preco_unitario,
+                            'valor_total': valor_total})
+
         continua = input('Deseja adicionar mais intens? (S/N):')
 
         if continua == 'N':
